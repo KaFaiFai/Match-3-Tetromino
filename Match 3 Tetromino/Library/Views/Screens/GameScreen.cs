@@ -3,6 +3,7 @@ using Match_3_Tetromino.Library.Models;
 using Match_3_Tetromino.Library.StateManagers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection.Metadata.Ecma335;
 
@@ -30,7 +31,11 @@ namespace Match_3_Tetromino.Library.Views.Screens
         void IScreen.Update(GameTime gameTime)
         {
             if (Input.EnterState == InputState.justPressed)
-                Debug.WriteLine("Hello");
+            {
+                List<(RowCol, Block)> willDropTo = _gameState.Board.WillDropTo(_gameState.CurPolyomino, 0);
+                _gameState.Board.PlaceBlocks(willDropTo);
+                _gameState.AdvancePolyomino();
+            };
         }
 
         void IScreen.Draw(GameTime gameTime)
@@ -64,6 +69,28 @@ namespace Match_3_Tetromino.Library.Views.Screens
                 int startX = (int)(center.X - board.Size.Col / 2 * cellSize) + cellSize * i;
                 int startY = (int)(center.Y - board.Size.Row / 2 * cellSize);
                 _spriteBatch.Draw(_rectangle, new Rectangle(startX, startY, width, lineHeight), Color.Black);
+            }
+            // Draw blocks in the grid
+            for (int i = 0; i < board.Size.Row; i++)
+            {
+                for (int j = 0; j < board.Size.Col; j++)
+                {
+                    Block? block = board.Data[i, j];
+                    if (block != null)
+                    {
+                        Color color = block switch
+                        {
+                            Block.a => Color.Blue,
+                            Block.b => Color.Purple,
+                            Block.c => Color.Yellow,
+                            Block.d => Color.Green,
+                            _ => Color.Red,
+                        };
+                        int startX = (int)(center.X - board.Size.Col / 2 * cellSize) + cellSize * j;
+                        int startY = (int)(center.Y - board.Size.Row / 2 * cellSize) + cellSize * i;
+                        _spriteBatch.Draw(_rectangle, new Rectangle(startX, startY, 30, 30), color);
+                    }
+                }
             }
         }
 

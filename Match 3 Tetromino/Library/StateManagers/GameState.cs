@@ -26,5 +26,11 @@ namespace Match_3_Tetromino.Library.StateManagers
             _curPolyomino = Polyomino.random(_random);
             _nextPolyomino = Polyomino.random(_random);
         }
+
+        public void AdvancePolyomino()
+        {
+            _curPolyomino = _nextPolyomino;
+            _nextPolyomino = Polyomino.random(_random);
+        }
     }
 }

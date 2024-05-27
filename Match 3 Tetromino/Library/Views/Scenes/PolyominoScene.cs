@@ -51,6 +51,5 @@ namespace Match_3_Tetromino.Library.Views.Scenes
             }
         }
 
-        private
     }
 }

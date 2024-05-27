@@ -71,5 +71,21 @@ namespace Match_3_Tetromino.Library.Models
 
             return end;
         }
+
+        public void PlaceBlocks(List<(RowCol, Block)> cells)
+        {
+            foreach (var (rowCol, block) in cells)
+            {
+                Data[rowCol.Row, rowCol.Col] = block;
+            }
+        }
+
+        public void RemoveBlocks(List<RowCol> rowCols)
+        {
+            foreach (var rowCol in rowCols)
+            {
+                Data[rowCol.Row, rowCol.Col] = null;
+            }
+        }
     }
 }
