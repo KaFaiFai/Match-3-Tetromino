@@ -15,6 +15,7 @@ namespace Match_3_Tetromino.Library.Views.Animations
 {
     internal class BlocksDrop
     {
+        public event Action Started;
         public event Action Completed;
 
         private TimeSpan _duration;
@@ -33,18 +34,16 @@ namespace Match_3_Tetromino.Library.Views.Animations
             _current = new List<BlockScene>(_startFrom);
         }
 
-        void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
-            _elapsedTime.Add(gameTime.ElapsedGameTime);
+            _elapsedTime = _elapsedTime.Add(gameTime.ElapsedGameTime);
             double t = _elapsedTime.TotalMilliseconds / _duration.TotalMilliseconds;
             _current = Interpolate(_startFrom, _dropTo, t);
-            if (t >= 1)
-            {
-                Completed?.Invoke();
-            }
+            if (t <= 0) Started?.Invoke();
+            if (t >= 1) Completed?.Invoke();
         }
 
-        void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
             foreach (var block in _current)
             {
@@ -52,12 +51,21 @@ namespace Match_3_Tetromino.Library.Views.Animations
             }
         }
 
-        static private List<BlockScene> Interpolate(List<BlockScene> from, List<BlockScene> to, double t)
+        private List<BlockScene> Interpolate(List<BlockScene> from, List<BlockScene> to, double t)
         {
             // t will be clamped in [0, 1]
             // when t = 0, return from
             // when t = 1, return to
-            throw new NotImplementedException();
+
+            double t_ = Math.Clamp(t, 0, 1);
+            for (int i = 0; i < from.Count; i++)
+            {
+                int x = Convert.ToInt32(from[i].X * (1 - t_) + to[i].X * t_);
+                int y = Convert.ToInt32(from[i].Y * (1 - t_) + to[i].Y * t_);
+                _current[i].X = x;
+                _current[i].Y = y;
+            }
+            return _current;
         }
     }
 }

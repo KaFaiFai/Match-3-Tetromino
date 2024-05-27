@@ -36,6 +36,7 @@ namespace Match_3_Tetromino
             base.LoadContent();
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _screen.LoadContent(_spriteBatch);
+            Contents.Load(Content, _spriteBatch);
         }
 
         protected override void Update(GameTime gameTime)
