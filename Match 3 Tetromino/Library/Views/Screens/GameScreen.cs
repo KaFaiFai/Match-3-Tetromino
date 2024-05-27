@@ -116,7 +116,7 @@ namespace Match_3_Tetromino.Library.Views.Screens
                             Block.d => Color.Green,
                             _ => Color.Red,
                         };
-                        _spriteBatch.Draw(_rectangle, new Rectangle(i * 30, j * 30, blockSize, blockSize), color);
+                        _spriteBatch.Draw(_rectangle, new Rectangle(j * 30, i * 30, blockSize, blockSize), color);
                     }
                 }
             }

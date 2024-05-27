@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Match_3_Tetromino.Library.Views.Animations
 {
-    internal class BlockFallAnimation
+    internal class BlocksDrop
     {
         public event Action Completed;
 
@@ -24,7 +24,7 @@ namespace Match_3_Tetromino.Library.Views.Animations
         private TimeSpan _elapsedTime;
         private List<BlockScene> _current;
 
-        public BlockFallAnimation(TimeSpan duration, List<BlockScene> startFrom, List<BlockScene> dropTo)
+        public BlocksDrop(TimeSpan duration, List<BlockScene> startFrom, List<BlockScene> dropTo)
         {
             _duration = duration;
             _startFrom = startFrom;

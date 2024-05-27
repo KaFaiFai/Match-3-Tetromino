@@ -34,11 +34,12 @@ namespace Match_3_Tetromino.Library.Models
 
         public List<(RowCol, Block)> WillDropTo(Polyomino polyomino, int leftIndex)
         {
+            // Top row is at 0 and bottom row is at Size.Row - 1
             List<int> lowestEmptySpace = Enumerable.Repeat(0, Size.Col).ToList();
 
             for (int col = 0; col < Size.Col; col++)
             {
-                for (int row = 0; row < Size.Row; row++)
+                for (int row = Size.Row - 1; row > -1; row--)
                 {
                     if (Data[row, col] == null)
                     {
@@ -48,11 +49,10 @@ namespace Match_3_Tetromino.Library.Models
                 }
             }
 
-            List<(RowCol, Block)> start = new List<(RowCol, Block)>();
-            List<(RowCol, Block)> end = new List<(RowCol, Block)>();
+            List<(RowCol, Block)> dropTo = new List<(RowCol, Block)>();
             int[,] shape = polyomino.getCurrentShape();
             // bottom-up search
-            for (int i = shape.GetLength(0) - 1; i >= 0; i--)
+            for (int i = shape.GetLength(0) - 1; i > -1; i--)
             {
                 for (int j = 0; j < shape.GetLength(1); j++)
                 {
@@ -61,15 +61,13 @@ namespace Match_3_Tetromino.Library.Models
                     {
                         Block block = polyomino.Blocks[blockIndex];
                         int col = leftIndex + j;
-                        // add 3 for overflow
-                        start.Add((new RowCol(Size.Col + 3 - i, col), block));
-                        end.Add((new RowCol(lowestEmptySpace[col], col), block));
-                        lowestEmptySpace[col] += 1;
+                        dropTo.Add((new RowCol(lowestEmptySpace[col], col), block));
+                        lowestEmptySpace[col] -= 1;
                     }
                 }
             }
 
-            return end;
+            return dropTo;
         }
 
         public void PlaceBlocks(List<(RowCol, Block)> cells)
