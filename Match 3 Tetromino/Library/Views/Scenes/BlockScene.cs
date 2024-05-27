@@ -20,6 +20,13 @@ namespace Match_3_Tetromino.Library.Views.Scenes
         public int Y { get; set; }
         public Block Block_ { get; set; }
 
+        public BlockScene(int x, int y, Block block)
+        {
+            X = x;
+            Y = y;
+            Block_ = block;
+        }
+
         override public void Draw(SpriteBatch spriteBatch)
         {
             Color color = Block_ switch
