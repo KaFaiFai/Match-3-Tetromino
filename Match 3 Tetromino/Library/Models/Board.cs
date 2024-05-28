@@ -85,5 +85,122 @@ namespace Match_3_Tetromino.Library.Models
                 Data[rowCol.Row, rowCol.Col] = null;
             }
         }
+
+        public List<(RowCol, Block)> FindMatch3()
+        {
+            List<(RowCol, Block)> results = new List<(RowCol, Block)>();
+
+            // scan horizontal lines
+            for (int i = 0; i < Size.Row; i++)
+            {
+                List<(RowCol, Block)> curResults = new List<(RowCol, Block)>();
+                for (int j = 0; j < Size.Col; j++)
+                {
+                    Block? block = Data[i, j];
+                    if (block == null)
+                    {
+                        if (curResults.Count >= 3)
+                        {
+                            results.AddRange(curResults);
+                        }
+                        curResults = new List<(RowCol, Block)>();
+                    }
+                    else if (curResults.Count == 0)
+                    {
+                        curResults.Add((new RowCol(i, j), (Block)block));
+                    }
+                    else
+                    {
+                        if (block == curResults.Last().Item2)
+                        {
+                            curResults.Add((new RowCol(i, j), (Block)block));
+                        }
+                        else
+                        {
+                            if (curResults.Count >= 3)
+                            {
+                                results.AddRange(curResults);
+                            }
+                            curResults = new List<(RowCol, Block)> { (new RowCol(i, j), (Block)block) };
+                        }
+                    }
+                }
+                if (curResults.Count >= 3)
+                {
+                    results.AddRange(curResults);
+                }
+            }
+
+
+            // scan vertical lines
+            for (int i = 0; i < Size.Col; i++)
+            {
+                List<(RowCol, Block)> curResults = new List<(RowCol, Block)>();
+                for (int j = 0; j < Size.Row; j++)
+                {
+                    Block? block = Data[i, j];
+                    if (block == null)
+                    {
+                        if (curResults.Count >= 3)
+                        {
+                            results.AddRange(curResults);
+                        }
+                        curResults = new List<(RowCol, Block)>();
+                    }
+                    else if (curResults.Count == 0)
+                    {
+                        curResults.Add((new RowCol(i, j), (Block)block));
+                    }
+                    else
+                    {
+                        if (block == curResults.Last().Item2)
+                        {
+                            curResults.Add((new RowCol(i, j), (Block)block));
+                        }
+                        else
+                        {
+                            if (curResults.Count >= 3)
+                            {
+                                results.AddRange(curResults);
+                            }
+                            curResults = new List<(RowCol, Block)> { (new RowCol(i, j), (Block)block) };
+                        }
+                    }
+                }
+                if (curResults.Count >= 3)
+                {
+                    results.AddRange(curResults);
+                }
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// Return the start and end position of flying blocks
+        /// </summary>
+        public List<(RowCol, RowCol, Block)> FindFlyingBlocks()
+        {
+            List<(RowCol, RowCol, Block)> flyingBlocks = new List<(RowCol, RowCol, Block)>();
+            for (int j = 0; j < Size.Col; j++)
+            {
+                int numEmpty = 0;
+                for (int i = 0; i < Size.Row; i++)
+                {
+                    if (Data[i, j] == null)
+                    {
+                        numEmpty++;
+                    }
+                    else if (numEmpty != 0)
+                    {
+                        RowCol start = new RowCol(i, j);
+                        RowCol end = new RowCol(i + numEmpty, j);
+                        Block block = (Block)Data[i, j];
+                        flyingBlocks.Add((start, end, block));
+                    }
+                }
+            }
+            return flyingBlocks;
+        }
     }
 }
