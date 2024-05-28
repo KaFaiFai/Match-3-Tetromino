@@ -13,12 +13,17 @@ using System.Threading.Tasks;
 
 namespace Match_3_Tetromino.Library.Views.Animations
 {
-    internal class BlocksDropController : AnimationController<List<BlockScene>>
+    internal class BlocksDrop : AnimationWithStates<List<BlockScene>>
     {
-        public BlocksDropController(TimeSpan duration, List<BlockScene> startFrom, List<BlockScene> dropTo)
-            : base(duration, startFrom, dropTo)
+        public BlocksDrop(TimeSpan duration, List<BlockScene> from, List<BlockScene> to)
+            : base(duration, from, to) { }
+
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            Current = new List<BlockScene>(startFrom);
+            foreach (var block in Current)
+            {
+                block.Draw(spriteBatch);
+            }
         }
 
         protected override List<BlockScene> Interpolation(double t)
@@ -30,29 +35,6 @@ namespace Match_3_Tetromino.Library.Views.Animations
                 Current[i].Transform.UpdateCenter(x: x, y: y);
             }
             return Current;
-        }
-    }
-
-    internal class BlocksDrop : Scene
-    {
-        public AnimationController<List<BlockScene>> Controller { get; private set; }
-        public BlocksDrop(TimeSpan duration, List<BlockScene> startFrom, List<BlockScene> dropTo)
-        {
-            Controller = new BlocksDropController(duration, startFrom, dropTo);
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
-            Controller.Update(gameTime);
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            foreach (var block in Controller.Current)
-            {
-                block.Draw(spriteBatch);
-            }
         }
     }
 }

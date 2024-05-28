@@ -19,7 +19,7 @@ namespace Match_3_Tetromino.Library.Views.Screens
     {
         private GameState _gameState;
 
-        private Scene? _animation;
+        private Animation? _animation;
         private GridComponent _gridComponent;
         private BlockScene?[,] _blockScenes;
         private PolyominoScene _curPolyominoScene;
@@ -42,7 +42,6 @@ namespace Match_3_Tetromino.Library.Views.Screens
             _animation?.Update(gameTime);
             if (Input.EnterState == InputState.justPressed)
             {
-
                 List<(RowCol, Block)> willDropTo = _gameState.Board.WillDropTo(_gameState.CurPolyomino, 0);
                 List<BlockScene> startFrom = new List<BlockScene> { };
                 List<BlockScene> dropTo = new List<BlockScene> { };
@@ -55,19 +54,18 @@ namespace Match_3_Tetromino.Library.Views.Screens
                     startFrom.Add(new BlockScene(startPoint.X, startPoint.Y, block));
                     dropTo.Add(new BlockScene(endPoint.X, endPoint.Y, block));
                 }
-                BlocksDrop blocksDrop = new BlocksDrop(TimeSpan.FromMilliseconds(1000), startFrom, dropTo);
-                blocksDrop.Controller.Started += () =>
+                _animation = new BlocksDrop(TimeSpan.FromMilliseconds(1000), startFrom, dropTo);
+                _animation.Started += () =>
                 {
                     Debug.Print("Event received!");
                 };
-                blocksDrop.Controller.Completed += () =>
+                _animation.Completed += () =>
                 {
                     _gameState.Board.PlaceBlocks(willDropTo);
                     _gameState.AdvancePolyomino();
                     _animation = null;
                     UpdateScenes();
                 };
-                _animation = blocksDrop;
             };
         }
 

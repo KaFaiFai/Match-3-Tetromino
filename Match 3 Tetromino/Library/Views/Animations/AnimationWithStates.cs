@@ -9,34 +9,23 @@ using System.Threading.Tasks;
 
 namespace Match_3_Tetromino.Library.Views.Animations
 {
-    internal abstract class AnimationController<T>
+    internal abstract class AnimationWithStates<T> : Animation
     {
-        public event Action Started;
-        public event Action Completed;
-
-        public TimeSpan Duration { get; private set; }
         public T From { get; private set; }
         public T To { get; private set; }
+        protected T Current { get; set; }
 
-        public TimeSpan ElapsedTime { get; private set; }
-        public T Current { get; protected set; }
-
-        public AnimationController(TimeSpan duration, T from, T to)
+        public AnimationWithStates(TimeSpan duration, T from, T to) : base(duration)
         {
-            Duration = duration;
             From = from;
             To = to;
-            ElapsedTime = TimeSpan.Zero;
             Current = Interpolate(0);
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
-            ElapsedTime = ElapsedTime.Add(gameTime.ElapsedGameTime);
-            double t = ElapsedTime.TotalMilliseconds / Duration.TotalMilliseconds;
-            Current = Interpolate(t);
-            if (t <= 0) Started?.Invoke();
-            if (t >= 1) Completed?.Invoke();
+            base.Update(gameTime);
+            Current = Interpolate(GetProgress());
         }
 
         /// <summary>
