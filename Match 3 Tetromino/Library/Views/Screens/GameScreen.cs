@@ -55,18 +55,45 @@ namespace Match_3_Tetromino.Library.Views.Screens
                     dropTo.Add(new BlockScene(endPoint.X, endPoint.Y, block));
                 }
                 _animation = new BlocksTween(TimeSpan.FromMilliseconds(1000), startFrom, dropTo);
-                _animation.Started += () =>
-                {
-                    Debug.Print("Event received!");
-                };
                 _animation.Completed += () =>
                 {
                     _gameState.Board.PlaceBlocks(willDropTo);
                     _gameState.AdvancePolyomino();
                     _animation = null;
                     UpdateScenes();
+                    SettleMove();
                 };
             };
+        }
+
+        private void SettleMove()
+        {
+            List<(RowCol, Block)> match3Blocks = _gameState.Board.FindMatch3();
+            Debug.Print(String.Format("SettleMove {0}", match3Blocks.Count));
+            if (match3Blocks.Count > 0)
+            {
+                List<BlockScene> from = new List<BlockScene> { };
+                List<BlockScene> to = new List<BlockScene> { };
+                foreach (var (rowCol, block) in match3Blocks)
+                {
+                    Point center = new Point(1280 / 2, 720 / 2);
+                    Point blockCenter = _gridComponent.GetCellLocationAt(rowCol.Row, rowCol.Col) + center;
+                    from.Add(new BlockScene(blockCenter.X, blockCenter.Y, block));
+                    to.Add(new BlockScene(blockCenter.X, blockCenter.Y, block));
+                    to.Last().Transform.Update(scale: Vector2.Zero);
+                }
+                _animation = new BlocksTween(TimeSpan.FromMilliseconds(1000), from, to);
+                _animation.Started += () =>
+                {
+                    _gameState.Board.RemoveBlocks(match3Blocks.Select((e, i) => e.Item1).ToList());
+                    UpdateScenes();
+                };
+                _animation.Completed += () =>
+                {
+                    _animation = null;
+                    UpdateScenes();
+                };
+            }
         }
 
         private void UpdateScenes()

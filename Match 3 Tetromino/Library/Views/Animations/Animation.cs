@@ -24,10 +24,10 @@ namespace Match_3_Tetromino.Library.Views.Animations
 
         public virtual void Update(GameTime gameTime)
         {
-            ElapsedTime = ElapsedTime.Add(gameTime.ElapsedGameTime);
             double t = GetProgress();
             if (t <= 0) Started?.Invoke();
             if (t >= 1) Completed?.Invoke();
+            ElapsedTime = ElapsedTime.Add(gameTime.ElapsedGameTime);
         }
 
         public virtual void Draw(SpriteBatch spriteBatch) { }

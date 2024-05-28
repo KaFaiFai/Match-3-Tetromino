@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -133,10 +134,10 @@ namespace Match_3_Tetromino.Library.Models
 
 
             // scan vertical lines
-            for (int i = 0; i < Size.Col; i++)
+            for (int j = 0; j < Size.Col; j++)
             {
                 List<(RowCol, Block)> curResults = new List<(RowCol, Block)>();
-                for (int j = 0; j < Size.Row; j++)
+                for (int i = 0; i < Size.Row; i++)
                 {
                     Block? block = Data[i, j];
                     if (block == null)
@@ -172,7 +173,7 @@ namespace Match_3_Tetromino.Library.Models
                     results.AddRange(curResults);
                 }
             }
-
+            Debug.Print(String.Format("{0}", results.Count));
             return results;
         }
 
