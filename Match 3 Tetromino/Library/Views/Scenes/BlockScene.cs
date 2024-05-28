@@ -1,4 +1,5 @@
-﻿using Match_3_Tetromino.Library.Core;
+﻿using Match_3_Tetromino.Components;
+using Match_3_Tetromino.Library.Core;
 using Match_3_Tetromino.Library.Models;
 using Match_3_Tetromino.Library.Views.Screens;
 using Microsoft.Xna.Framework;
