@@ -1,4 +1,4 @@
-﻿using Match_3_Tetromino.Components;
+﻿using Match_3_Tetromino.Library.Components;
 using Match_3_Tetromino.Library.Core;
 using Match_3_Tetromino.Library.Models;
 using Microsoft.Xna.Framework;
@@ -32,7 +32,9 @@ namespace Match_3_Tetromino.Library.Views.Scenes
             UpdateBlockScene(polyomino);
         }
 
-        override public void Draw(SpriteBatch spriteBatch)
+        public override void Update(GameTime gameTime) { }
+
+        public override void Draw(SpriteBatch spriteBatch)
         {
             foreach (var block in _blockScenes)
             {

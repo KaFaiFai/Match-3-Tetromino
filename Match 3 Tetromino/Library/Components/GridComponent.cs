@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Match_3_Tetromino.Components
+namespace Match_3_Tetromino.Library.Components
 {
     /// <summary>
     /// Represents grid of this shape

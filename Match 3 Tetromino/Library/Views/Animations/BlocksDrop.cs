@@ -13,58 +13,46 @@ using System.Threading.Tasks;
 
 namespace Match_3_Tetromino.Library.Views.Animations
 {
-    internal class BlocksDrop
+    internal class BlocksDropController : AnimationController<List<BlockScene>>
     {
-        public event Action Started;
-        public event Action Completed;
+        public BlocksDropController(TimeSpan duration, List<BlockScene> startFrom, List<BlockScene> dropTo)
+            : base(duration, startFrom, dropTo)
+        {
+            Current = new List<BlockScene>(startFrom);
+        }
 
-        private TimeSpan _duration;
-        private List<BlockScene> _startFrom;
-        private List<BlockScene> _dropTo;
+        protected override List<BlockScene> Interpolation(double t)
+        {
+            for (int i = 0; i < From.Count; i++)
+            {
+                int x = Convert.ToInt32(From[i].Transform.Center.X * (1 - t) + To[i].Transform.Center.X * t);
+                int y = Convert.ToInt32(From[i].Transform.Center.Y * (1 - t) + To[i].Transform.Center.Y * t);
+                Current[i].Transform.UpdateCenter(x: x, y: y);
+            }
+            return Current;
+        }
+    }
 
-        private TimeSpan _elapsedTime;
-        private List<BlockScene> _current;
-
+    internal class BlocksDrop : Scene
+    {
+        public AnimationController<List<BlockScene>> Controller { get; private set; }
         public BlocksDrop(TimeSpan duration, List<BlockScene> startFrom, List<BlockScene> dropTo)
         {
-            _duration = duration;
-            _startFrom = startFrom;
-            _dropTo = dropTo;
-            _elapsedTime = TimeSpan.Zero;
-            _current = new List<BlockScene>(_startFrom);
+            Controller = new BlocksDropController(duration, startFrom, dropTo);
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
-            _elapsedTime = _elapsedTime.Add(gameTime.ElapsedGameTime);
-            double t = _elapsedTime.TotalMilliseconds / _duration.TotalMilliseconds;
-            _current = Interpolate(_startFrom, _dropTo, t);
-            if (t <= 0) Started?.Invoke();
-            if (t >= 1) Completed?.Invoke();
+            base.Update(gameTime);
+            Controller.Update(gameTime);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var block in _current)
+            foreach (var block in Controller.Current)
             {
                 block.Draw(spriteBatch);
             }
-        }
-
-        private List<BlockScene> Interpolate(List<BlockScene> from, List<BlockScene> to, double t)
-        {
-            // t will be clamped in [0, 1]
-            // when t = 0, return from
-            // when t = 1, return to
-
-            double t_ = Math.Clamp(t, 0, 1);
-            for (int i = 0; i < from.Count; i++)
-            {
-                int x = Convert.ToInt32(from[i].Transform.Center.X * (1 - t_) + to[i].Transform.Center.X * t_);
-                int y = Convert.ToInt32(from[i].Transform.Center.Y * (1 - t_) + to[i].Transform.Center.Y * t_);
-                _current[i].Transform.UpdateCenter(x: x, y: y);
-            }
-            return _current;
         }
     }
 }

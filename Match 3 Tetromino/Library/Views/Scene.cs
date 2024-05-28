@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
 
-namespace Match_3_Tetromino.Components
+namespace Match_3_Tetromino.Library.Views
 {
     internal abstract class Scene
     {

@@ -1,4 +1,4 @@
-﻿using Match_3_Tetromino.Components;
+﻿using Match_3_Tetromino.Library.Components;
 using Match_3_Tetromino.Library.Core;
 using Match_3_Tetromino.Library.Models;
 using Match_3_Tetromino.Library.StateManagers;
@@ -19,7 +19,7 @@ namespace Match_3_Tetromino.Library.Views.Screens
     {
         private GameState _gameState;
 
-        private BlocksDrop? _blocksDrop;
+        private Scene? _animation;
         private GridComponent _gridComponent;
         private BlockScene?[,] _blockScenes;
         private PolyominoScene _curPolyominoScene;
@@ -39,7 +39,7 @@ namespace Match_3_Tetromino.Library.Views.Screens
 
         void IScreen.Update(GameTime gameTime)
         {
-            _blocksDrop?.Update(gameTime);
+            _animation?.Update(gameTime);
             if (Input.EnterState == InputState.justPressed)
             {
 
@@ -55,18 +55,19 @@ namespace Match_3_Tetromino.Library.Views.Screens
                     startFrom.Add(new BlockScene(startPoint.X, startPoint.Y, block));
                     dropTo.Add(new BlockScene(endPoint.X, endPoint.Y, block));
                 }
-                _blocksDrop = new BlocksDrop(TimeSpan.FromMilliseconds(1000), startFrom, dropTo);
-                _blocksDrop.Started += () =>
+                BlocksDrop blocksDrop = new BlocksDrop(TimeSpan.FromMilliseconds(1000), startFrom, dropTo);
+                blocksDrop.Controller.Started += () =>
                 {
                     Debug.Print("Event received!");
                 };
-                _blocksDrop.Completed += () =>
+                blocksDrop.Controller.Completed += () =>
                 {
                     _gameState.Board.PlaceBlocks(willDropTo);
                     _gameState.AdvancePolyomino();
-                    _blocksDrop = null;
+                    _animation = null;
                     UpdateScenes();
                 };
+                _animation = blocksDrop;
             };
         }
 
@@ -100,7 +101,7 @@ namespace Match_3_Tetromino.Library.Views.Screens
             DrawGrid(spriteBatch);
             _curPolyominoScene.Draw(spriteBatch);
             _nextPolyominoScene.Draw(spriteBatch);
-            _blocksDrop?.Draw(spriteBatch);
+            _animation?.Draw(spriteBatch);
 
             spriteBatch.End();
         }
