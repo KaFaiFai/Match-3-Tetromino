@@ -13,11 +13,11 @@ namespace Match_3_Tetromino.Library.Views.Screens
     {
         public void Initialize() { }
 
-        public void LoadContent(SpriteBatch spriteBatch) { }
+        public void LoadContent() { }
 
         public void Update(GameTime gameTime) { }
 
-        public void Draw(GameTime gameTime) { }
+        public void Draw(SpriteBatch spriteBatch) { }
 
         public void UnloadContent() { }
 

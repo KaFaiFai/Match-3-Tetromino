@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 
@@ -17,7 +18,6 @@ namespace Match_3_Tetromino.Library.Views.Screens
     internal class GameScreen : IScreen
     {
         private GameState _gameState;
-        private SpriteBatch _spriteBatch;
 
         private BlocksDrop? _blocksDrop;
         private GridComponent _gridComponent;
@@ -34,12 +34,7 @@ namespace Match_3_Tetromino.Library.Views.Screens
             _blockScenes = new BlockScene[size.Row, size.Col];
             _curPolyominoScene = new PolyominoScene(100, 100, _gameState.CurPolyomino);
             _nextPolyominoScene = new PolyominoScene(100, 400, _gameState.NextPolyomino);
-            //UpdateScenes();
-        }
-
-        void IScreen.LoadContent(SpriteBatch spriteBatch)
-        {
-            _spriteBatch = spriteBatch;
+            UpdateScenes();
         }
 
         void IScreen.Update(GameTime gameTime)
@@ -51,12 +46,16 @@ namespace Match_3_Tetromino.Library.Views.Screens
                 List<(RowCol, Block)> willDropTo = _gameState.Board.WillDropTo(_gameState.CurPolyomino, 0);
                 List<BlockScene> startFrom = new List<BlockScene> { };
                 List<BlockScene> dropTo = new List<BlockScene> { };
+                int lowestRow = willDropTo.Max(e => e.Item1.Row);
                 foreach (var (rowCol, block) in willDropTo)
                 {
-                    startFrom.Add(new BlockScene(rowCol.Col * 10, rowCol.Row * 10, block));
-                    dropTo.Add(new BlockScene(rowCol.Col * 20, rowCol.Row * 20, block));
+                    Point center = new Point(1280 / 2, 720 / 2);
+                    Point startPoint = _gridComponent.GetCellLocationAt(rowCol.Row - lowestRow, rowCol.Col) + center;
+                    Point endPoint = _gridComponent.GetCellLocationAt(rowCol.Row, rowCol.Col) + center;
+                    startFrom.Add(new BlockScene(startPoint.X, startPoint.Y, block));
+                    dropTo.Add(new BlockScene(endPoint.X, endPoint.Y, block));
                 }
-                _blocksDrop = new BlocksDrop(new TimeSpan(0, 0, 1), startFrom, dropTo);
+                _blocksDrop = new BlocksDrop(TimeSpan.FromMilliseconds(1000), startFrom, dropTo);
                 _blocksDrop.Started += () =>
                 {
                     Debug.Print("Event received!");
@@ -95,18 +94,18 @@ namespace Match_3_Tetromino.Library.Views.Screens
         }
 
 
-        void IScreen.Draw(GameTime gameTime)
+        void IScreen.Draw(SpriteBatch spriteBatch)
         {
-            _spriteBatch.Begin();
-            DrawGrid();
-            _curPolyominoScene.Draw(_spriteBatch);
-            _nextPolyominoScene.Draw(_spriteBatch);
-            _blocksDrop?.Draw(_spriteBatch);
+            spriteBatch.Begin();
+            DrawGrid(spriteBatch);
+            _curPolyominoScene.Draw(spriteBatch);
+            _nextPolyominoScene.Draw(spriteBatch);
+            _blocksDrop?.Draw(spriteBatch);
 
-            _spriteBatch.End();
+            spriteBatch.End();
         }
 
-        private void DrawGrid()
+        private void DrawGrid(SpriteBatch spriteBatch)
         {
             int cellSize = 50;
             int width = 2;
@@ -120,7 +119,7 @@ namespace Match_3_Tetromino.Library.Views.Screens
                 Point start = _gridComponent.GetCellLocationAt(i - 0.5, -0.5);
                 start.Y -= width / 2;
                 Point size = new Point(lineWidth, width);
-                _spriteBatch.Draw(Contents.Pixel, new Rectangle(start + center, size), Color.Black);
+                spriteBatch.Draw(Contents.Pixel, new Rectangle(start + center, size), Color.Black);
             }
             // Draw vertical lines
             for (int i = 0; i < board.Size.Col + 1; i++)
@@ -129,7 +128,7 @@ namespace Match_3_Tetromino.Library.Views.Screens
                 Point start = _gridComponent.GetCellLocationAt(-0.5, i - 0.5);
                 start.X -= width / 2;
                 Point size = new Point(width, lineHeight);
-                _spriteBatch.Draw(Contents.Pixel, new Rectangle(start + center, size), Color.Black);
+                spriteBatch.Draw(Contents.Pixel, new Rectangle(start + center, size), Color.Black);
             }
 
             // Draw blocks in the grid
@@ -137,7 +136,7 @@ namespace Match_3_Tetromino.Library.Views.Screens
             {
                 for (int j = 0; j < _blockScenes.GetLength(1); j++)
                 {
-                    _blockScenes[i, j]?.Draw(_spriteBatch);
+                    _blockScenes[i, j]?.Draw(spriteBatch);
                 }
             }
         }

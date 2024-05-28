@@ -30,7 +30,7 @@ namespace Match_3_Tetromino.Library.Views.Animations
             _duration = duration;
             _startFrom = startFrom;
             _dropTo = dropTo;
-            _elapsedTime = new TimeSpan(0, 0, 0);
+            _elapsedTime = TimeSpan.Zero;
             _current = new List<BlockScene>(_startFrom);
         }
 

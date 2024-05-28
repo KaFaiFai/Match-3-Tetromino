@@ -35,7 +35,7 @@ namespace Match_3_Tetromino
         {
             base.LoadContent();
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _screen.LoadContent(_spriteBatch);
+            _screen.LoadContent();
             Contents.Load(Content, _spriteBatch);
         }
 
@@ -53,7 +53,7 @@ namespace Match_3_Tetromino
         {
             base.Draw(gameTime);
             GraphicsDevice.Clear(Color.White);
-            _screen.Draw(gameTime);
+            _screen.Draw(_spriteBatch);
         }
 
         protected override void UnloadContent()
