@@ -19,9 +19,9 @@ namespace Match_3_Tetromino.Library.Views.Screens
     {
         private GameState _gameState;
 
-        private Animation? _animation;
+        private Animation _animation;
         private GridComponent _gridComponent;
-        private BlockScene?[,] _blockScenes;
+        private BlockScene[,] _blockScenes;
         private PolyominoScene _curPolyominoScene;
         private PolyominoScene _nextPolyominoScene;
 
@@ -54,7 +54,7 @@ namespace Match_3_Tetromino.Library.Views.Screens
                     startFrom.Add(new BlockScene(startPoint.X, startPoint.Y, block));
                     dropTo.Add(new BlockScene(endPoint.X, endPoint.Y, block));
                 }
-                _animation = new BlocksDrop(TimeSpan.FromMilliseconds(1000), startFrom, dropTo);
+                _animation = new BlocksTween(TimeSpan.FromMilliseconds(1000), startFrom, dropTo);
                 _animation.Started += () =>
                 {
                     Debug.Print("Event received!");

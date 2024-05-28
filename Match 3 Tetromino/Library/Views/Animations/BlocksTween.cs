@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace Match_3_Tetromino.Library.Views.Animations
 {
-    internal class BlocksDrop : AnimationWithStates<List<BlockScene>>
+    internal class BlocksTween : AnimationWithStates<List<BlockScene>>
     {
-        public BlocksDrop(TimeSpan duration, List<BlockScene> from, List<BlockScene> to)
+        public BlocksTween(TimeSpan duration, List<BlockScene> from, List<BlockScene> to)
             : base(duration, from, to) { }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -32,7 +32,9 @@ namespace Match_3_Tetromino.Library.Views.Animations
             {
                 int x = Convert.ToInt32(From[i].Transform.Center.X * (1 - t) + To[i].Transform.Center.X * t);
                 int y = Convert.ToInt32(From[i].Transform.Center.Y * (1 - t) + To[i].Transform.Center.Y * t);
-                Current[i].Transform.UpdateCenter(x: x, y: y);
+                Vector2 scale = From[i].Transform.Scale * new Vector2((float)(1 - t))
+                    + To[i].Transform.Scale * new Vector2((float)t);
+                Current[i].Transform.Update(x: x, y: y, scale: scale);
             }
             return Current;
         }
