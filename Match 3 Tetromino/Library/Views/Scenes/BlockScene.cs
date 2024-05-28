@@ -17,15 +17,13 @@ namespace Match_3_Tetromino.Library.Views.Scenes
     {
         static int BaseSize = 30;
 
-        public int X { get; set; }
-        public int Y { get; set; }
         public Block Block_ { get; set; }
+        public TransformComponent Transform { get; private set; }
 
         public BlockScene(int x, int y, Block block)
         {
-            X = x;
-            Y = y;
             Block_ = block;
+            Transform = new TransformComponent(x, y, BaseSize, BaseSize);
         }
 
         override public void Draw(SpriteBatch spriteBatch)
@@ -38,7 +36,7 @@ namespace Match_3_Tetromino.Library.Views.Scenes
                 Block.d => Color.Green,
                 _ => Color.Red,
             };
-            spriteBatch.Draw(Contents.Pixel, new Rectangle(X, Y, BaseSize, BaseSize), color);
+            spriteBatch.Draw(Contents.Pixel, Transform.Rect, color);
         }
     }
 }

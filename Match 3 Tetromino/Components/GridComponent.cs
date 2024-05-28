@@ -48,5 +48,12 @@ namespace Match_3_Tetromino.Components
             Point cellCenter = new Point(X, Y);
             return cellCenter - _gridCenter;
         }
+        public Point GetCellLocationAt(double row, double col)
+        {
+            int X = (int)(CellSize * col + CellSize / 2);
+            int Y = (int)(CellSize * row + CellSize / 2);
+            Point cellCenter = new Point(X, Y);
+            return cellCenter - _gridCenter;
+        }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -17,13 +18,13 @@ namespace Match_3_Tetromino.Library.Views.Scenes
     {
         static int BlockSize = 40;
 
-        private List<BlockScene> _blockScenes;
+        private BlockScene[] _blockScenes;
         private TransformComponent _transformComponent;
         private GridComponent _gridComponent;
 
         public PolyominoScene(int x, int y, Polyomino polyomino)
         {
-            _blockScenes = new List<BlockScene>(polyomino.Blocks.Count);
+            _blockScenes = new BlockScene[polyomino.Blocks.Count];
             _transformComponent = new TransformComponent(x, y);
             int[,] shape = polyomino.getCurrentShape();
             _gridComponent = new GridComponent(shape.GetLength(0), shape.GetLength(1), BlockSize);
@@ -52,7 +53,7 @@ namespace Match_3_Tetromino.Library.Views.Scenes
                     {
                         Block block = polyomino.Blocks[blockIndex];
                         Point cellCenter = _gridComponent.GetCellLocationAt(i, j);
-                        Point coord = _transformComponent.GetCenter() + cellCenter;
+                        Point coord = _transformComponent.Center + cellCenter;
                         _blockScenes[blockIndex] = new BlockScene(coord.X, coord.Y, block);
                     }
                 }

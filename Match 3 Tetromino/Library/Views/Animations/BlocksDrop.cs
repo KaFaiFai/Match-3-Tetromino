@@ -60,10 +60,9 @@ namespace Match_3_Tetromino.Library.Views.Animations
             double t_ = Math.Clamp(t, 0, 1);
             for (int i = 0; i < from.Count; i++)
             {
-                int x = Convert.ToInt32(from[i].X * (1 - t_) + to[i].X * t_);
-                int y = Convert.ToInt32(from[i].Y * (1 - t_) + to[i].Y * t_);
-                _current[i].X = x;
-                _current[i].Y = y;
+                int x = Convert.ToInt32(from[i].Transform.Center.X * (1 - t_) + to[i].Transform.Center.X * t_);
+                int y = Convert.ToInt32(from[i].Transform.Center.Y * (1 - t_) + to[i].Transform.Center.Y * t_);
+                _current[i].Transform.UpdateCenter(x: x, y: y);
             }
             return _current;
         }

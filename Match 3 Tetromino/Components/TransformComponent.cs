@@ -9,35 +9,30 @@ namespace Match_3_Tetromino.Components
 {
     internal class TransformComponent
     {
-        // represents the center
-        public int X { get; private set; }
-        public int Y { get; private set; }
-
-        public int Width { get; private set; }
-        public int Height { get; private set; }
+        public Point Center { get; private set; }
+        public Point Size { get; private set; }
+        public Rectangle Rect { get; private set; }
 
         public TransformComponent(int x, int y, int width = 0, int height = 0)
         {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
+            Center = new Point(x, y);
+            Size = new Point(width, height);
+            UpdateRectangle();
         }
 
-        public void Update(int? x, int? y)
+        public void UpdateCenter(int? x, int? y)
         {
-            X = x ?? X;
-            Y = y ?? Y;
+            Center = new Point(x ?? Center.X, y ?? Center.Y);
+            UpdateRectangle();
         }
 
-        public Point GetCenter()
+        private void UpdateRectangle()
         {
-            return new Point(X, Y);
-        }
-
-        public Rectangle GetRectangle()
-        {
-            return new Rectangle(X, Y, Width, Height);
+            // form Rectangle.Center: If Width or Height is an odd number, the center point will be rounded down.
+            // https://docs.monogame.net/api/Microsoft.Xna.Framework.Rectangle.html
+            int topLeftX = Center.X - (int)Math.Ceiling(Size.X / 2.0);
+            int topLeftY = Center.Y - (int)Math.Ceiling(Size.Y / 2.0);
+            Rect = new Rectangle(topLeftX, topLeftY, Size.X, Size.Y);
         }
     }
 }
