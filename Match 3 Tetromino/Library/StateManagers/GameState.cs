@@ -18,6 +18,7 @@ namespace Match_3_Tetromino.Library.StateManagers
         public Board Board { get { return _board; } }
         public Polyomino CurPolyomino { get { return _curPolyomino; } }
         public Polyomino NextPolyomino { get { return _nextPolyomino; } }
+        public int LeftIndex { get; private set; }
 
         public GameState(int seed = 0)
         {
@@ -31,6 +32,12 @@ namespace Match_3_Tetromino.Library.StateManagers
         {
             _curPolyomino = _nextPolyomino;
             _nextPolyomino = Polyomino.random(_random);
+        }
+
+        public void Move(bool toLeft)
+        {
+            LeftIndex += toLeft ? -1 : 1;
+            LeftIndex = _board.WallKick(CurPolyomino, LeftIndex);
         }
     }
 }

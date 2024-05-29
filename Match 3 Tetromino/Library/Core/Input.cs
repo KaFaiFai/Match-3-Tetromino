@@ -16,6 +16,8 @@ namespace Match_3_Tetromino.Library.Core
     {
         static private InputState _enterState = InputState.notPressed;
         static public InputState EnterState { get { return _enterState; } }
+        static public InputState MoveLeft { get; private set; } = InputState.notPressed;
+        static public InputState MoveRight { get; private set; } = InputState.notPressed;
 
         static public void Update()
         {
@@ -27,6 +29,26 @@ namespace Match_3_Tetromino.Library.Core
             else
             {
                 _enterState = InputState.notPressed;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                if (MoveLeft == InputState.notPressed) MoveLeft = InputState.justPressed;
+                else MoveLeft = InputState.holding;
+            }
+            else
+            {
+                MoveLeft = InputState.notPressed;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                if (MoveRight == InputState.notPressed) MoveRight = InputState.justPressed;
+                else MoveRight = InputState.holding;
+            }
+            else
+            {
+                MoveRight = InputState.notPressed;
             }
         }
     }

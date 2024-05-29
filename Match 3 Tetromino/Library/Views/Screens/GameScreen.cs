@@ -42,18 +42,14 @@ namespace Match_3_Tetromino.Library.Views.Screens
             _animation?.Update(gameTime);
             if (Input.EnterState == InputState.justPressed)
             {
-                List<(RowCol, Block)> willDropTo = _gameState.Board.WillDropTo(_gameState.CurPolyomino, 0);
-                List<BlockScene> startFrom = new List<BlockScene> { };
-                List<BlockScene> dropTo = new List<BlockScene> { };
+                List<(RowCol, Block)> willDropTo = _gameState.Board.WillDropTo(_gameState.CurPolyomino, _gameState.LeftIndex);
                 int lowestRow = willDropTo.Max(e => e.Item1.Row);
-                foreach (var (rowCol, block) in willDropTo)
+                List<BlockScene> startFrom = _fromRowColBlocks(willDropTo.Select(e =>
                 {
-                    Point center = new Point(1280 / 2, 720 / 2);
-                    Point startPoint = _gridComponent.GetCellLocationAt(rowCol.Row - lowestRow, rowCol.Col) + center;
-                    Point endPoint = _gridComponent.GetCellLocationAt(rowCol.Row, rowCol.Col) + center;
-                    startFrom.Add(new BlockScene(startPoint.X, startPoint.Y, block));
-                    dropTo.Add(new BlockScene(endPoint.X, endPoint.Y, block));
-                }
+                    RowCol newRowCol = new RowCol(e.Item1.Row - lowestRow, e.Item1.Col);
+                    return (newRowCol, e.Item2);
+                }).ToList());
+                List<BlockScene> dropTo = _fromRowColBlocks(willDropTo);
                 _animation = new BlocksTween(TimeSpan.FromMilliseconds(1000), startFrom, dropTo);
                 _animation.Completed += () =>
                 {
@@ -64,24 +60,29 @@ namespace Match_3_Tetromino.Library.Views.Screens
                     SettleMove();
                 };
             };
+
+            if (Input.MoveLeft == InputState.justPressed)
+            {
+                Debug.Print("MoveLeft");
+                _gameState.Move(toLeft: true);
+                UpdateScenes();
+            }
+            if (Input.MoveRight == InputState.justPressed)
+            {
+                Debug.Print("MoveRight");
+                _gameState.Move(toLeft: false);
+                UpdateScenes();
+            }
         }
 
         private void SettleMove()
         {
             List<(RowCol, Block)> match3Blocks = _gameState.Board.FindMatch3();
-            Debug.Print(String.Format("SettleMove {0}", match3Blocks.Count));
             if (match3Blocks.Count > 0)
             {
-                List<BlockScene> from = new List<BlockScene> { };
-                List<BlockScene> to = new List<BlockScene> { };
-                foreach (var (rowCol, block) in match3Blocks)
-                {
-                    Point center = new Point(1280 / 2, 720 / 2);
-                    Point blockCenter = _gridComponent.GetCellLocationAt(rowCol.Row, rowCol.Col) + center;
-                    from.Add(new BlockScene(blockCenter.X, blockCenter.Y, block));
-                    to.Add(new BlockScene(blockCenter.X, blockCenter.Y, block));
-                    to.Last().Transform.Update(scale: Vector2.Zero);
-                }
+                List<BlockScene> from = _fromRowColBlocks(match3Blocks);
+                List<BlockScene> to = _fromRowColBlocks(match3Blocks);
+                to.ForEach(s => s.Transform.Update(scale: Vector2.Zero));
                 _animation = new BlocksTween(TimeSpan.FromMilliseconds(1000), from, to);
                 _animation.Started += () =>
                 {
@@ -90,10 +91,43 @@ namespace Match_3_Tetromino.Library.Views.Screens
                 };
                 _animation.Completed += () =>
                 {
-                    _animation = null;
                     UpdateScenes();
+                    List<(RowCol, RowCol, Block)> flyingBlocks = _gameState.Board.FindFlyingBlocks();
+                    if (flyingBlocks.Count > 0)
+                    {
+                        List<BlockScene> from = _fromRowColBlocks(flyingBlocks.Select(e => (e.Item1, e.Item3)).ToList());
+                        List<BlockScene> to = _fromRowColBlocks(flyingBlocks.Select(e => (e.Item2, e.Item3)).ToList());
+                        _animation = new BlocksTween(TimeSpan.FromMilliseconds(1000), from, to);
+                        _animation.Started += () =>
+                        {
+                            _gameState.Board.RemoveBlocks(flyingBlocks.Select(e => e.Item1).ToList());
+                            UpdateScenes();
+                        };
+                        _animation.Completed += () =>
+                        {
+                            _gameState.Board.PlaceBlocks(flyingBlocks.Select(e => (e.Item1, e.Item3)).ToList());
+                            UpdateScenes();
+                            SettleMove();
+                        };
+                    }
+                    else
+                    {
+                        _animation = null;
+                    }
                 };
             }
+        }
+
+        private List<BlockScene> _fromRowColBlocks(List<(RowCol, Block)> rowColBlocks)
+        {
+            List<BlockScene> results = new List<BlockScene> { };
+            foreach (var (rowCol, block) in rowColBlocks)
+            {
+                Point center = new Point(1280 / 2, 720 / 2);
+                Point blockCenter = _gridComponent.GetCellLocationAt(rowCol.Row, rowCol.Col) + center;
+                results.Add(new BlockScene(blockCenter.X, blockCenter.Y, block));
+            }
+            return results;
         }
 
         private void UpdateScenes()

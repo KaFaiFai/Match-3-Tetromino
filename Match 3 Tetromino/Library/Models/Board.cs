@@ -173,7 +173,6 @@ namespace Match_3_Tetromino.Library.Models
                     results.AddRange(curResults);
                 }
             }
-            Debug.Print(String.Format("{0}", results.Count));
             return results;
         }
 
@@ -186,7 +185,7 @@ namespace Match_3_Tetromino.Library.Models
             for (int j = 0; j < Size.Col; j++)
             {
                 int numEmpty = 0;
-                for (int i = 0; i < Size.Row; i++)
+                for (int i = Size.Row - 1; i > -1; i--)
                 {
                     if (Data[i, j] == null)
                     {
