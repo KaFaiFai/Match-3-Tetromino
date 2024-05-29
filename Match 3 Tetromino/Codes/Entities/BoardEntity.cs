@@ -16,7 +16,7 @@ namespace Match_3_Tetromino.Codes.Entities
         {
             AddProperty(new Transform() { Center = new Vector2(1280, 720) / 2 });
             AddProperty(new GridLayout() { CellSize = 30, RowCol = new Point(10, 5) });
-            AddProperty(new BlockBoard() { Data = new Block?[10, 5] });
+            AddProperty(new BlockGrid() { Data = new Block?[10, 5] });
         }
     }
 }

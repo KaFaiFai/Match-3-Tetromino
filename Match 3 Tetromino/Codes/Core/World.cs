@@ -19,7 +19,7 @@ namespace Match_3_Tetromino.Codes.Core
         {
             foreach (Processor processor in Processors)
             {
-                processor.Update(gameTime, Entities);
+                processor.Update(gameTime, getContext());
             }
         }
 
@@ -27,8 +27,16 @@ namespace Match_3_Tetromino.Codes.Core
         {
             foreach (Processor processor in Processors)
             {
-                processor.Draw(spriteBatch, Entities);
+                processor.Draw(spriteBatch, getContext());
             }
+        }
+
+        private WorldContext getContext()
+        {
+            return new WorldContext()
+            {
+                Entities = Entities,
+            };
         }
     }
 }

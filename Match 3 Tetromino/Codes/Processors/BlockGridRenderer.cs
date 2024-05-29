@@ -19,18 +19,18 @@ namespace Match_3_Tetromino.Codes.Processors
 
         private List<(Rectangle, Block)> _toBeDrawn; // cache the results of blocks and their positions
 
-        override public void Update(GameTime gameTime, List<Entity> entities)
+        override public void Update(GameTime gameTime, WorldContext context)
         {
-            base.Update(gameTime, entities);
+            base.Update(gameTime, context);
 
             _toBeDrawn.Clear();
-            foreach (Entity entity in entities)
+            foreach (Entity entity in context.Entities)
             {
-                if (entity.HasProperties(new List<Type> { typeof(BlockBoard), typeof(GridLayout), typeof(Transform) }))
+                if (entity.HasProperties(new List<Type> { typeof(BlockGrid), typeof(GridLayout), typeof(Transform) }))
                 {
-                    BlockBoard blockBoard = (BlockBoard)entity.GetProperty<BlockBoard>();
-                    GridLayout gridLayout = (GridLayout)entity.GetProperty<GridLayout>();
-                    Transform transform = (Transform)entity.GetProperty<Transform>();
+                    BlockGrid blockBoard = entity.GetProperty<BlockGrid>();
+                    GridLayout gridLayout = entity.GetProperty<GridLayout>();
+                    Transform transform = entity.GetProperty<Transform>();
                     Vector2 center = transform.Center;
                     Vector2 gridCenter = gridLayout.RowCol.ToVector2() * gridLayout.CellSize / 2;
 
@@ -53,9 +53,9 @@ namespace Match_3_Tetromino.Codes.Processors
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch, List<Entity> entities)
+        public override void Draw(SpriteBatch spriteBatch, WorldContext context)
         {
-            base.Draw(spriteBatch, entities);
+            base.Draw(spriteBatch, context);
 
             foreach (var (rect, block) in _toBeDrawn)
             {

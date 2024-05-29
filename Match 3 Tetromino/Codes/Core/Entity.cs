@@ -29,13 +29,13 @@ namespace Match_3_Tetromino.Codes.Core
             return types.All(c => HasProperty(c));
         }
 
-        public Property GetProperty<T>() where T : Property
+        public T GetProperty<T>() where T : Property
         {
             foreach (Property property in Properties)
             {
                 if (property is T)
                 {
-                    return property;
+                    return (T)property;
                 }
             }
             throw new ArgumentException("Property does not exist");

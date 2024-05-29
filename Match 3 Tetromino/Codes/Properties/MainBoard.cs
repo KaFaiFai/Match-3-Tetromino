@@ -1,5 +1,4 @@
 ﻿using Match_3_Tetromino.Codes.Core;
-using Match_3_Tetromino.Codes.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Match_3_Tetromino.Codes.Properties
 {
-    internal record BlockBoard : Property
+    internal record MainBoard : Property
     {
-        public Block?[,] Data { get; set; } = new Block?[,] { };
+        public int LeftIndex { get; set; }
     }
 }

@@ -15,7 +15,15 @@ namespace Match_3_Tetromino.Codes.Worlds
         {
             base.Initialize();
             Entities.Add(new BoardEntity());
+
             Processors.Add(new BlockGridRenderer());
+            InputTracker inputTracker = new InputTracker();
+            BoardEventHandler boardEventHandler = new BoardEventHandler();
+            inputTracker.PressedMoveRight += (context) => boardEventHandler.Move(context, toLeft: false);
+            inputTracker.PressedMoveLeft += (context) => boardEventHandler.Move(context, toLeft: false);
+            inputTracker.PressedConfirm += (context) => boardEventHandler.Confirm(context);
+            Processors.Add(inputTracker);
+            Processors.Add(boardEventHandler);
         }
     }
 }

@@ -10,8 +10,8 @@ namespace Match_3_Tetromino.Codes.Core
 {
     internal abstract class Processor // as System in ECS
     {
-        virtual public void Update(GameTime gameTime, List<Entity> entities) { }
+        virtual public void Update(GameTime gameTime, WorldContext context) { }
 
-        virtual public void Draw(SpriteBatch spriteBatch, List<Entity> entities) { }
+        virtual public void Draw(SpriteBatch spriteBatch, WorldContext context) { }
     }
 }
