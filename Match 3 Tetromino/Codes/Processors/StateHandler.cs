@@ -8,8 +8,12 @@ using System.Threading.Tasks;
 
 namespace Match_3_Tetromino.Codes.Processors
 {
-    internal class BoardEventHandler : Processor
+    internal class StateHandler : Processor
     {
+        private Random random;
+        public StateHandler(int seed = 0) {
+        random =}
+
         public void Move(WorldContext context, bool toLeft)
         {
             foreach (Entity entity in context.Entities)

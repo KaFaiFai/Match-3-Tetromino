@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Match_3_Tetromino.Codes.Managers
+namespace Match_3_Tetromino.Codes.Services
 {
     internal static class Contents
     {

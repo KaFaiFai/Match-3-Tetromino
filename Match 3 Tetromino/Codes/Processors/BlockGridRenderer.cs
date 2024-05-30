@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Match_3_Tetromino.Codes.Models;
 using Microsoft.Xna.Framework.Graphics;
-using Match_3_Tetromino.Codes.Managers;
+using Match_3_Tetromino.Codes.Services;
 
 namespace Match_3_Tetromino.Codes.Processors
 {
