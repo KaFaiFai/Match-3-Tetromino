@@ -12,14 +12,21 @@ namespace Match_3_Tetromino.Lib.Components
         public float CellSize { get; set; } = 0;
         public Point RowCol { get; set; } = Point.Zero;
 
-        public Vector2 GetCellPosition(Point rowCol)
+        /// <summary>
+        /// Return offset from the grid center to the center of this cell
+        /// </summary>
+        public Vector2 At(Point rowCol)
         {
             // (row, col) is mapped to (y, x)
             Vector2 cellPos = CellSize * rowCol.ToVector2() + Vector2.One * CellSize / 2;
-            Vector2 gridCenter = RowCol.ToVector2() * CellSize / 2;
-            Vector2 offset = cellPos - gridCenter;
+            Vector2 offset = cellPos - Center();
             Vector2 swapped = new Vector2(offset.Y, offset.X);
             return swapped;
+        }
+
+        public Vector2 Center()
+        {
+            return RowCol.ToVector2() * CellSize / 2;
         }
     }
 }

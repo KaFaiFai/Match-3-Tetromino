@@ -9,6 +9,7 @@ using Match_3_Tetromino.Lib.Models;
 using Match_3_Tetromino.Lib.Util;
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
+using Match_3_Tetromino.Lib.Services;
 
 namespace Match_3_Tetromino.Lib.Entities
 {
@@ -38,23 +39,47 @@ namespace Match_3_Tetromino.Lib.Entities
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            for (int i = 0; i < BlockTypes.GetLength(0); i++)
+            int numRow = BlockTypes.GetLength(0);
+            int numCol = BlockTypes.GetLength(1);
+
+            for (int i = 0; i < numRow; i++)
             {
-                for (int j = 0; j < BlockTypes.GetLength(1); j++)
+                for (int j = 0; j < numCol; j++)
                 {
                     BlockType? type = BlockTypes[i, j];
                     if (type != null)
                     {
                         Block block = new Block((BlockType)type);
-                        block.Transform = new Transform()
-                        {
-                            Center = Transform.Center + GridLayout.GetCellPosition(new Point(i, j)),
-                            Size = new Vector2(40, 40),
-                        };
-
+                        block.Transform.Center = Transform.Center + GridLayout.At(new Point(i, j));
                         block.Draw(spriteBatch);
                     }
                 }
+            }
+
+            int lineWidth = 1;
+
+            // horizontal lines
+            for (int i = 0; i < numRow + 1; i++)
+            {
+                Vector2 topLeft = (GridLayout.At(new Point(i - 1, -1)) + GridLayout.At(new Point(i, 0))) / 2;
+                topLeft.Y -= lineWidth;
+                Vector2 bottomRight = (GridLayout.At(new Point(i - 1, numCol - 1)) + GridLayout.At(new Point(i, numCol))) / 2;
+                bottomRight.Y += lineWidth;
+                Vector2 size = bottomRight - topLeft;
+                Rectangle rectangle = new Rectangle((topLeft + Transform.Center).ToPoint(), size.ToPoint());
+                spriteBatch.Draw(Contents.Pixel, rectangle, Color.Black);
+            }
+
+            // vertical lines
+            for (int i = 0; i < numCol + 1; i++)
+            {
+                Vector2 topLeft = (GridLayout.At(new Point(-1, i - 1)) + GridLayout.At(new Point(0, i))) / 2;
+                topLeft.X -= lineWidth;
+                Vector2 bottomRight = (GridLayout.At(new Point(numRow - 1, i - 1)) + GridLayout.At(new Point(numRow, i))) / 2;
+                bottomRight.X += lineWidth;
+                Vector2 size = bottomRight - topLeft;
+                Rectangle rectangle = new Rectangle((topLeft + Transform.Center).ToPoint(), size.ToPoint());
+                spriteBatch.Draw(Contents.Pixel, rectangle, Color.Black);
             }
 
             if (_blocks != null)
@@ -75,11 +100,10 @@ namespace Match_3_Tetromino.Lib.Entities
             foreach (var (rowCol, type) in dropTo)
             {
                 Block newBlock = new Block(type);
-                newBlock.Transform.Center = GridLayout.GetCellPosition(rowCol - new Point(6, 0)) + Transform.Center;
-                newBlock.Transform.Size = new Vector2(40, 40);
+                newBlock.Transform.Center = GridLayout.At(rowCol - new Point(6, 0)) + Transform.Center;
                 Tween<Vector2> newTween = new Tween<Vector2>(
                     newBlock.Transform.Center,
-                    GridLayout.GetCellPosition(rowCol) + Transform.Center,
+                    GridLayout.At(rowCol) + Transform.Center,
                     TimeSpan.FromMilliseconds(1000)
                 );
                 newTween.Updating += (value) => newBlock.Transform.Center = value;
@@ -106,8 +130,8 @@ namespace Match_3_Tetromino.Lib.Entities
                 {
                     Block newBlock = new Block(type);
                     Tween<Vector2> newTween = new Tween<Vector2>(
-                        GridLayout.GetCellPosition(start) + Transform.Center,
-                        GridLayout.GetCellPosition(end) + Transform.Center,
+                        GridLayout.At(start) + Transform.Center,
+                        GridLayout.At(end) + Transform.Center,
                         TimeSpan.FromMilliseconds(1000)
                     );
                     newTween.Started += (_) => BlockTypes[start.X, start.Y] = null;
@@ -128,6 +152,7 @@ namespace Match_3_Tetromino.Lib.Entities
                 foreach (var (rowCol, type) in match3)
                 {
                     Block newBlock = new Block(type);
+                    newBlock.Transform.Center = GridLayout.At(rowCol) + Transform.Center;
                     Tween<Vector2> newTween = new Tween<Vector2>(
                         Vector2.One,
                         Vector2.Zero,
@@ -141,8 +166,6 @@ namespace Match_3_Tetromino.Lib.Entities
                 }
                 _tweens = new ParallelTweens<Vector2>(tweens);
                 _tweens.Ended += (value) => ResolveBoard();
-
-                ResolveBoard();
             }
             else
             {
@@ -195,42 +218,6 @@ namespace Match_3_Tetromino.Lib.Entities
 
         private List<(Point, BlockType)> FindMatch3()
         {
-            void scanCurBlock(
-                List<(Point, BlockType)> results,
-                List<(Point, BlockType)> curResults,
-                BlockType? block,
-                Point rowCol
-            )
-            {
-                if (block == null)
-                {
-                    if (curResults.Count >= 3)
-                    {
-                        results.AddRange(curResults);
-                    }
-                    curResults = new List<(Point, BlockType)>();
-                }
-                else if (curResults.Count == 0)
-                {
-                    curResults.Add((rowCol, (BlockType)block));
-                }
-                else
-                {
-                    if (block == curResults.Last().Item2)
-                    {
-                        curResults.Add((rowCol, (BlockType)block));
-                    }
-                    else
-                    {
-                        if (curResults.Count >= 3)
-                        {
-                            results.AddRange(curResults);
-                        }
-                        curResults = new List<(Point, BlockType)> { (rowCol, (BlockType)block) };
-                    }
-                }
-            }
-
             int numRow = BlockTypes.GetLength(0);
             int numCol = BlockTypes.GetLength(1);
             List<(Point, BlockType)> results = new List<(Point, BlockType)>();
@@ -242,7 +229,34 @@ namespace Match_3_Tetromino.Lib.Entities
                 for (int j = 0; j < numCol; j++)
                 {
                     BlockType? block = BlockTypes[i, j];
-                    scanCurBlock(results, curResults, block, new Point(i, j));
+                    Point rowCol = new Point(i, j);
+                    if (block == null)
+                    {
+                        if (curResults.Count >= 3)
+                        {
+                            results.AddRange(curResults);
+                        }
+                        curResults = new List<(Point, BlockType)>();
+                    }
+                    else if (curResults.Count == 0)
+                    {
+                        curResults.Add((rowCol, (BlockType)block));
+                    }
+                    else
+                    {
+                        if (block == curResults.Last().Item2)
+                        {
+                            curResults.Add((rowCol, (BlockType)block));
+                        }
+                        else
+                        {
+                            if (curResults.Count >= 3)
+                            {
+                                results.AddRange(curResults);
+                            }
+                            curResults = new List<(Point, BlockType)> { (rowCol, (BlockType)block) };
+                        }
+                    }
                 }
                 if (curResults.Count >= 3)
                 {
@@ -258,7 +272,34 @@ namespace Match_3_Tetromino.Lib.Entities
                 for (int i = 0; i < numRow; i++)
                 {
                     BlockType? block = BlockTypes[i, j];
-                    scanCurBlock(results, curResults, block, new Point(i, j));
+                    Point rowCol = new Point(i, j);
+                    if (block == null)
+                    {
+                        if (curResults.Count >= 3)
+                        {
+                            results.AddRange(curResults);
+                        }
+                        curResults = new List<(Point, BlockType)>();
+                    }
+                    else if (curResults.Count == 0)
+                    {
+                        curResults.Add((rowCol, (BlockType)block));
+                    }
+                    else
+                    {
+                        if (block == curResults.Last().Item2)
+                        {
+                            curResults.Add((rowCol, (BlockType)block));
+                        }
+                        else
+                        {
+                            if (curResults.Count >= 3)
+                            {
+                                results.AddRange(curResults);
+                            }
+                            curResults = new List<(Point, BlockType)> { (rowCol, (BlockType)block) };
+                        }
+                    }
                 }
                 if (curResults.Count >= 3)
                 {

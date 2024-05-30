@@ -16,7 +16,7 @@ namespace Match_3_Tetromino.Lib.Components
         public Rectangle GetRectangle()
         {
             Vector2 scaledSize = Size * Scale;
-            Vector2 topLeft = Center - scaledSize;
+            Vector2 topLeft = Center - scaledSize / 2;
             return new Rectangle(topLeft.ToPoint(), scaledSize.ToPoint());
         }
     }

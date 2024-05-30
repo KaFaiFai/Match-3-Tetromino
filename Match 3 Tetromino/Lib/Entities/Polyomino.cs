@@ -40,7 +40,7 @@ namespace Match_3_Tetromino.Lib.Entities
                         Block block = new Block(type);
                         block.Transform = new Transform()
                         {
-                            Center = Transform.Center + GridLayout.GetCellPosition(new Point(i, j)),
+                            Center = Transform.Center + GridLayout.At(new Point(i, j)),
                             Size = new Vector2(40, 40),
                         };
 

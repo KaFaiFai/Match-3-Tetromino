@@ -18,9 +18,10 @@ namespace Match_3_Tetromino.Lib.Entities
 
         public Block(BlockType type)
         {
-            Transform = new Transform();
+            Transform = new Transform() { Size = new Vector2(40, 40) };
             Type = type;
         }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             Color color = Type switch

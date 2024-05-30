@@ -19,11 +19,11 @@ namespace Match_3_Tetromino.Lib.Util
 
         override public void Update(TimeSpan timeSpan)
         {
-            base.Update(timeSpan);
             foreach (var t in _tweens)
             {
                 t.Update(timeSpan);
             }
+            base.Update(timeSpan);
         }
     }
 }
