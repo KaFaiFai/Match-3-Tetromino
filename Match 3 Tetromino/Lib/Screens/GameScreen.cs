@@ -52,10 +52,12 @@ namespace Match_3_Tetromino.Lib.Screens
             _inputTracker.RotateClockwisePressed += () =>
             {
                 _curPolyomino.Rotate(clockwise: true);
+                _nextPolyomino.Rotate(clockwise: true);
             };
             _inputTracker.RotateAntiClockwisePressed += () =>
             {
                 _curPolyomino.Rotate(clockwise: false);
+                _nextPolyomino.Rotate(clockwise: false);
             };
         }
 

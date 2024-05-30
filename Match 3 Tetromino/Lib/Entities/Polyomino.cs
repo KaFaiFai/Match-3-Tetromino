@@ -1,5 +1,6 @@
 ﻿using Match_3_Tetromino.Lib.Components;
 using Match_3_Tetromino.Lib.Models;
+using Match_3_Tetromino.Lib.Services;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -38,15 +39,39 @@ namespace Match_3_Tetromino.Lib.Entities
                     {
                         BlockType type = BlockTypes[typeIndex];
                         Block block = new Block(type);
-                        block.Transform = new Transform()
-                        {
-                            Center = Transform.Center + GridLayout.At(new Point(i, j)),
-                            Size = new Vector2(40, 40),
-                        };
-
+                        block.Transform.Center = Transform.Center + GridLayout.At(new Point(i, j));
                         block.Draw(spriteBatch);
                     }
                 }
+            }
+
+            int numRow = rowCol.X;
+            int numCol = rowCol.Y;
+
+            int lineWidth = 1;
+
+            // horizontal lines
+            for (int i = 0; i < numRow + 1; i++)
+            {
+                Vector2 topLeft = (GridLayout.At(new Point(i - 1, -1)) + GridLayout.At(new Point(i, 0))) / 2;
+                topLeft.Y -= lineWidth;
+                Vector2 bottomRight = (GridLayout.At(new Point(i - 1, numCol - 1)) + GridLayout.At(new Point(i, numCol))) / 2;
+                bottomRight.Y += lineWidth;
+                Vector2 size = bottomRight - topLeft;
+                Rectangle rectangle = new Rectangle((topLeft + Transform.Center).ToPoint(), size.ToPoint());
+                spriteBatch.Draw(Contents.Pixel, rectangle, Color.Black);
+            }
+
+            // vertical lines
+            for (int i = 0; i < numCol + 1; i++)
+            {
+                Vector2 topLeft = (GridLayout.At(new Point(-1, i - 1)) + GridLayout.At(new Point(0, i))) / 2;
+                topLeft.X -= lineWidth;
+                Vector2 bottomRight = (GridLayout.At(new Point(numRow - 1, i - 1)) + GridLayout.At(new Point(numRow, i))) / 2;
+                bottomRight.X += lineWidth;
+                Vector2 size = bottomRight - topLeft;
+                Rectangle rectangle = new Rectangle((topLeft + Transform.Center).ToPoint(), size.ToPoint());
+                spriteBatch.Draw(Contents.Pixel, rectangle, Color.Black);
             }
         }
 
