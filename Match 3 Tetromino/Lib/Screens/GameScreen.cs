@@ -78,14 +78,22 @@ namespace Match_3_Tetromino.Lib.Screens
 
         private void AdvancePolyomino()
         {
-            Shape shape = Shape.AllShapes[_gameState.Rng.Next(Shape.AllShapes.Count)];
+            int[,] shape = Shapes.AllShapes[_gameState.Rng.Next(Shapes.AllShapes.Count)];
             List<BlockType> blocks = new List<BlockType> { };
-            for (int i = 0; i < shape.CountNonEmpty(); i++)
+
+            for (int i = 0; i < shape.GetLength(0); i++)
             {
-                Array allBlocks = Enum.GetValues(typeof(BlockType));
-                BlockType randomBlock = (BlockType)allBlocks.GetValue(_gameState.Rng.Next(allBlocks.Length));
-                blocks.Add(randomBlock);
+                for (int j = 0; j < shape.GetLength(1); j++)
+                {
+                    if (shape[i, j] != -1)
+                    {
+                        Array allBlocks = Enum.GetValues(typeof(BlockType));
+                        BlockType randomBlock = (BlockType)allBlocks.GetValue(_gameState.Rng.Next(allBlocks.Length));
+                        blocks.Add(randomBlock);
+                    }
+                }
             }
+
             Polyomino newPolyomino = new Polyomino(shape, blocks);
             _curPolyomino = _nextPolyomino;
             _nextPolyomino = newPolyomino;

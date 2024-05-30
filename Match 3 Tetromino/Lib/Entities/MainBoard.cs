@@ -195,7 +195,7 @@ namespace Match_3_Tetromino.Lib.Entities
             }
 
             List<(Point, BlockType)> dropTo = new List<(Point, BlockType)>();
-            int[,] shape = polyomino.Shape.Matrix;
+            int[,] shape = polyomino.Shape;
             // bottom-up search
             for (int i = shape.GetLength(0) - 1; i > -1; i--)
             {

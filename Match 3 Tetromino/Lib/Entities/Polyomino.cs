@@ -1,6 +1,7 @@
 ﻿using Match_3_Tetromino.Lib.Components;
 using Match_3_Tetromino.Lib.Models;
 using Match_3_Tetromino.Lib.Services;
+using Match_3_Tetromino.Library.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -16,25 +17,28 @@ namespace Match_3_Tetromino.Lib.Entities
     {
         public Transform Transform { get; set; }
         public GridLayout GridLayout { get; set; }
-        public Shape Shape { get; set; }
+        public int[,] Shape { get; set; }
         public List<BlockType> BlockTypes { get; set; }
 
-        public Polyomino(Shape shape, List<BlockType> blockTypes)
+        public Polyomino(int[,] shape, List<BlockType> blockTypes)
         {
             Transform = new Transform();
-            GridLayout = new GridLayout() { CellSize = 50, RowCol = shape.GetRowCol() };
+            int numRow = shape.GetLength(0);
+            int numCol = shape.GetLength(1);
+            GridLayout = new GridLayout() { CellSize = 50, RowCol = new Point(numRow, numCol) };
             Shape = shape;
             BlockTypes = blockTypes;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Point rowCol = Shape.GetRowCol();
-            for (int i = 0; i < rowCol.X; i++)
+            int numRow = Shape.GetLength(0);
+            int numCol = Shape.GetLength(1);
+            for (int i = 0; i < numRow; i++)
             {
-                for (int j = 0; j < rowCol.Y; j++)
+                for (int j = 0; j < numCol; j++)
                 {
-                    int typeIndex = Shape.Matrix[i, j];
+                    int typeIndex = Shape[i, j];
                     if (typeIndex != -1)
                     {
                         BlockType type = BlockTypes[typeIndex];
@@ -44,9 +48,6 @@ namespace Match_3_Tetromino.Lib.Entities
                     }
                 }
             }
-
-            int numRow = rowCol.X;
-            int numCol = rowCol.Y;
 
             int lineWidth = 1;
 
@@ -75,18 +76,36 @@ namespace Match_3_Tetromino.Lib.Entities
             }
         }
 
+        private void RotateClockwise()
+        {
+            int rows = Shape.GetLength(0);
+            int cols = Shape.GetLength(1);
+            int[,] rotatedMatrix = new int[cols, rows];
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    rotatedMatrix[j, rows - 1 - i] = Shape[i, j];
+                }
+            }
+            Shape = rotatedMatrix;
+        }
+
         public void Rotate(bool clockwise)
         {
             if (clockwise)
             {
-                Shape.RotateClockwise();
+                RotateClockwise();
             }
             else
             {
                 // Rotate 3 times clockwise for anti-clockwise
-                Enumerable.Range(0, 3).ToList().ForEach(_ => Shape.RotateClockwise());
+                Enumerable.Range(0, 3).ToList().ForEach(_ => RotateClockwise());
             }
-            GridLayout.RowCol = Shape.GetRowCol();
+            int numRow = Shape.GetLength(0);
+            int numCol = Shape.GetLength(1);
+            GridLayout.RowCol = new Point(numRow, numCol);
         }
     }
 }
