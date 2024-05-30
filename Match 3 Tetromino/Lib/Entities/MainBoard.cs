@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Match_3_Tetromino.Lib.Models;
 using Match_3_Tetromino.Lib.Util;
-using Match_3_Tetromino.Library.Models;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace Match_3_Tetromino.Lib.Entities
 {
@@ -75,9 +75,11 @@ namespace Match_3_Tetromino.Lib.Entities
             foreach (var (rowCol, type) in dropTo)
             {
                 Block newBlock = new Block(type);
+                newBlock.Transform.Center = GridLayout.GetCellPosition(rowCol - new Point(6, 0)) + Transform.Center;
+                newBlock.Transform.Size = new Vector2(40, 40);
                 Tween<Vector2> newTween = new Tween<Vector2>(
-                    GridLayout.GetCellPosition(rowCol - new Point(6, 0)),
-                    GridLayout.GetCellPosition(rowCol),
+                    newBlock.Transform.Center,
+                    GridLayout.GetCellPosition(rowCol) + Transform.Center,
                     TimeSpan.FromMilliseconds(1000)
                 );
                 newTween.Updating += (value) => newBlock.Transform.Center = value;
@@ -104,8 +106,8 @@ namespace Match_3_Tetromino.Lib.Entities
                 {
                     Block newBlock = new Block(type);
                     Tween<Vector2> newTween = new Tween<Vector2>(
-                        GridLayout.GetCellPosition(start),
-                        GridLayout.GetCellPosition(end),
+                        GridLayout.GetCellPosition(start) + Transform.Center,
+                        GridLayout.GetCellPosition(end) + Transform.Center,
                         TimeSpan.FromMilliseconds(1000)
                     );
                     newTween.Started += (_) => BlockTypes[start.X, start.Y] = null;
@@ -152,7 +154,42 @@ namespace Match_3_Tetromino.Lib.Entities
 
         private List<(Point, BlockType)> WillDropTo(Polyomino polyomino, int leftIndex)
         {
-            return new();
+            // Top row is at 0 and bottom row is at NumRow - 1
+            int numRow = BlockTypes.GetLength(0);
+            int numCol = BlockTypes.GetLength(1);
+            List<int> lowestEmptySpace = Enumerable.Repeat(0, numCol).ToList();
+
+            for (int col = 0; col < numCol; col++)
+            {
+                for (int row = numRow - 1; row > -1; row--)
+                {
+                    if (BlockTypes[row, col] == null)
+                    {
+                        lowestEmptySpace[col] = row;
+                        break;
+                    }
+                }
+            }
+
+            List<(Point, BlockType)> dropTo = new List<(Point, BlockType)>();
+            int[,] shape = polyomino.Shape.Matrix;
+            // bottom-up search
+            for (int i = shape.GetLength(0) - 1; i > -1; i--)
+            {
+                for (int j = 0; j < shape.GetLength(1); j++)
+                {
+                    int blockIndex = shape[i, j];
+                    if (blockIndex != -1)
+                    {
+                        BlockType block = polyomino.BlockTypes[blockIndex];
+                        int col = leftIndex + j;
+                        dropTo.Add((new Point(lowestEmptySpace[col], col), block));
+                        lowestEmptySpace[col] -= 1;
+                    }
+                }
+            }
+
+            return dropTo;
         }
 
         private List<(Point, BlockType)> FindMatch3()

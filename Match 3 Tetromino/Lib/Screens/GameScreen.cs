@@ -22,8 +22,6 @@ namespace Match_3_Tetromino.Lib.Screens
             _gameState = new GameState(0);
             AdvancePolyomino();
             AdvancePolyomino();
-            _curPolyomino.Transform.Center = new Vector2(200, 200);
-            _nextPolyomino.Transform.Center = new Vector2(200, 500);
             _mainBoard = new MainBoard(new Point(10, 6));
             _mainBoard.Transform.Center = new Vector2(1280, 720) / 2;
             _mainBoard.BlockTypes[0, 0] = BlockType.a;
@@ -42,7 +40,6 @@ namespace Match_3_Tetromino.Lib.Screens
             {
                 _gameState.IsInputEnabled = false;
                 _mainBoard.PlacePolyomino(_curPolyomino, _gameState.LeftIndex);
-                _curPolyomino = null;
             };
             _inputTracker.MoveLeftPressed += () =>
             {
@@ -88,13 +85,11 @@ namespace Match_3_Tetromino.Lib.Screens
                 blocks.Add(randomBlock);
             }
             Polyomino newPolyomino = new Polyomino(shape, blocks);
-
-            if (_curPolyomino != null)
-            {
-                _nextPolyomino.Transform = _curPolyomino.Transform;
-            }
             _curPolyomino = _nextPolyomino;
             _nextPolyomino = newPolyomino;
+
+            if (_curPolyomino != null) _curPolyomino.Transform.Center = new Vector2(200, 200);
+            if (_nextPolyomino != null) _nextPolyomino.Transform.Center = new Vector2(200, 500);
         }
     }
 }
