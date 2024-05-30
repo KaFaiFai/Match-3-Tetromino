@@ -15,16 +15,11 @@ namespace Match_3_Tetromino.Lib.Screens
         private Polyomino _curPolyomino;
         private Polyomino _nextPolyomino;
         private MainBoard _mainBoard;
-
-        private Tween<object> _tween;
-
-        public GameScreen()
-        {
-            _gameState = new GameState(0);
-        }
+        private InputTracker _inputTracker;
 
         public void Initialize()
         {
+            _gameState = new GameState(0);
             AdvancePolyomino();
             AdvancePolyomino();
             _curPolyomino.Transform.Center = new Vector2(200, 200);
@@ -35,12 +30,42 @@ namespace Match_3_Tetromino.Lib.Screens
             _mainBoard.BlockTypes[9, 0] = BlockType.b;
             _mainBoard.BlockTypes[0, 5] = BlockType.c;
             _mainBoard.BlockTypes[9, 5] = BlockType.d;
-            _mainBoard.BoardResolved += AdvancePolyomino;
+
+            _mainBoard.BoardResolved += () =>
+            {
+                _gameState.IsInputEnabled = true;
+                AdvancePolyomino();
+            };
+
+            _inputTracker = new InputTracker();
+            _inputTracker.EnterPressed += () =>
+            {
+                _gameState.IsInputEnabled = false;
+                _mainBoard.PlacePolyomino(_curPolyomino, _gameState.LeftIndex);
+                _curPolyomino = null;
+            };
+            _inputTracker.MoveLeftPressed += () =>
+            {
+                _gameState.LeftIndex--;
+            };
+            _inputTracker.MoveRightPressed += () =>
+            {
+                _gameState.LeftIndex++;
+            };
+            _inputTracker.RotateClockwisePressed += () =>
+            {
+                _curPolyomino.Rotate(clockwise: true);
+            };
+            _inputTracker.RotateAntiClockwisePressed += () =>
+            {
+                _curPolyomino.Rotate(clockwise: false);
+            };
         }
 
         public void Update(GameTime gameTime)
         {
             _mainBoard.Update(gameTime);
+            _inputTracker.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)

@@ -42,8 +42,8 @@ namespace Match_3_Tetromino
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            //Input.Update();
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            InputButton.Update();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             _screen.Update(gameTime);
