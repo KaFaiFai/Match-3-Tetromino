@@ -28,7 +28,7 @@ namespace Match_3_Tetromino.Lib.Util
             To = to;
         }
 
-        public void Update(TimeSpan timeSpan)
+        virtual public void Update(TimeSpan timeSpan)
         {
             double t = ElapsedTime.TotalMilliseconds / Duration.TotalMilliseconds;
             Current = Interpolate((float)t);
@@ -39,7 +39,7 @@ namespace Match_3_Tetromino.Lib.Util
             ElapsedTime = ElapsedTime.Add(timeSpan);
         }
 
-        private T Interpolate(float t)
+        virtual protected T Interpolate(float t)
         {
             // linear interpolation
             return Op.Add(Op.Multiply(From, 1 - t), Op.Multiply(To, t));

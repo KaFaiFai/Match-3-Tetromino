@@ -1,3 +1,3 @@
 ﻿
-using var game = new Match_3_Tetromino.Game1();
+using var game = new Match_3_Tetromino.Game3();
 game.Run();

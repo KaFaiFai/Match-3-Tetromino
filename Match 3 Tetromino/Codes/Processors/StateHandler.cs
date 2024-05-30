@@ -11,8 +11,9 @@ namespace Match_3_Tetromino.Codes.Processors
     internal class StateHandler : Processor
     {
         private Random random;
-        public StateHandler(int seed = 0) {
-        random =}
+        public StateHandler(int seed = 0)
+        {
+        }
 
         public void Move(WorldContext context, bool toLeft)
         {
