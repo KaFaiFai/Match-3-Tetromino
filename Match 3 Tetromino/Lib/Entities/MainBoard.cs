@@ -192,15 +192,107 @@ namespace Match_3_Tetromino.Lib.Entities
             return dropTo;
         }
 
+
         private List<(Point, BlockType)> FindMatch3()
         {
-            return new();
+            void scanCurBlock(
+                List<(Point, BlockType)> results,
+                List<(Point, BlockType)> curResults,
+                BlockType? block,
+                Point rowCol
+            )
+            {
+                if (block == null)
+                {
+                    if (curResults.Count >= 3)
+                    {
+                        results.AddRange(curResults);
+                    }
+                    curResults = new List<(Point, BlockType)>();
+                }
+                else if (curResults.Count == 0)
+                {
+                    curResults.Add((rowCol, (BlockType)block));
+                }
+                else
+                {
+                    if (block == curResults.Last().Item2)
+                    {
+                        curResults.Add((rowCol, (BlockType)block));
+                    }
+                    else
+                    {
+                        if (curResults.Count >= 3)
+                        {
+                            results.AddRange(curResults);
+                        }
+                        curResults = new List<(Point, BlockType)> { (rowCol, (BlockType)block) };
+                    }
+                }
+            }
+
+            int numRow = BlockTypes.GetLength(0);
+            int numCol = BlockTypes.GetLength(1);
+            List<(Point, BlockType)> results = new List<(Point, BlockType)>();
+
+            // scan horizontal lines
+            for (int i = 0; i < numRow; i++)
+            {
+                List<(Point, BlockType)> curResults = new List<(Point, BlockType)>();
+                for (int j = 0; j < numCol; j++)
+                {
+                    BlockType? block = BlockTypes[i, j];
+                    scanCurBlock(results, curResults, block, new Point(i, j));
+                }
+                if (curResults.Count >= 3)
+                {
+                    results.AddRange(curResults);
+                }
+            }
+
+
+            // scan vertical lines
+            for (int j = 0; j < numCol; j++)
+            {
+                List<(Point, BlockType)> curResults = new List<(Point, BlockType)>();
+                for (int i = 0; i < numRow; i++)
+                {
+                    BlockType? block = BlockTypes[i, j];
+                    scanCurBlock(results, curResults, block, new Point(i, j));
+                }
+                if (curResults.Count >= 3)
+                {
+                    results.AddRange(curResults);
+                }
+            }
+            return results;
         }
 
 
         private List<(Point, Point, BlockType)> FindFlyingBlocks()
         {
-            return new();
+            int numRow = BlockTypes.GetLength(0);
+            int numCol = BlockTypes.GetLength(1);
+            List<(Point, Point, BlockType)> flyingBlocks = new List<(Point, Point, BlockType)>();
+            for (int j = 0; j < numCol; j++)
+            {
+                int numEmpty = 0;
+                for (int i = numRow - 1; i > -1; i--)
+                {
+                    if (BlockTypes[i, j] == null)
+                    {
+                        numEmpty++;
+                    }
+                    else if (numEmpty != 0)
+                    {
+                        Point start = new Point(i, j);
+                        Point end = new Point(i + numEmpty, j);
+                        BlockType block = (BlockType)BlockTypes[i, j];
+                        flyingBlocks.Add((start, end, block));
+                    }
+                }
+            }
+            return flyingBlocks;
         }
     }
 }

@@ -16,13 +16,17 @@ namespace Match_3_Tetromino.Lib.Services
     {
         static public Dictionary<Keys, InputState> keyStateMap = new Dictionary<Keys, InputState>();
 
-        static public void Update()
+        static InputButton()
         {
             List<Keys> keysToCheck = new List<Keys> { Keys.Enter, Keys.Left, Keys.Right, Keys.Q, Keys.E };
             foreach (Keys key in keysToCheck)
             {
                 keyStateMap[key] = InputState.notPressed;
             }
+        }
+
+        static public void Update()
+        {
             foreach (var (key, state) in keyStateMap)
             {
                 if (Keyboard.GetState().IsKeyDown(key))
