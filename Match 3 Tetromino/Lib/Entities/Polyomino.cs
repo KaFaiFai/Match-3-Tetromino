@@ -1,7 +1,6 @@
 ﻿using Match_3_Tetromino.Lib.Components;
 using Match_3_Tetromino.Lib.Models;
 using Match_3_Tetromino.Lib.Services;
-using Match_3_Tetromino.Library.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -76,22 +75,6 @@ namespace Match_3_Tetromino.Lib.Entities
             }
         }
 
-        private void RotateClockwise()
-        {
-            int rows = Shape.GetLength(0);
-            int cols = Shape.GetLength(1);
-            int[,] rotatedMatrix = new int[cols, rows];
-
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < cols; j++)
-                {
-                    rotatedMatrix[j, rows - 1 - i] = Shape[i, j];
-                }
-            }
-            Shape = rotatedMatrix;
-        }
-
         public void Rotate(bool clockwise)
         {
             if (clockwise)
@@ -106,6 +89,22 @@ namespace Match_3_Tetromino.Lib.Entities
             int numRow = Shape.GetLength(0);
             int numCol = Shape.GetLength(1);
             GridLayout.RowCol = new Point(numRow, numCol);
+        }
+
+        private void RotateClockwise()
+        {
+            int rows = Shape.GetLength(0);
+            int cols = Shape.GetLength(1);
+            int[,] rotatedMatrix = new int[cols, rows];
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    rotatedMatrix[j, rows - 1 - i] = Shape[i, j];
+                }
+            }
+            Shape = rotatedMatrix;
         }
     }
 }
